@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // A simple regex to check for kebab-case.
 // It allows lowercase letters, numbers, and hyphens.
@@ -38,10 +38,48 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ onSubmit }) => {
     }
   };
 
+  useEffect(() => {
+    if (projectName === "") {
+      setError("");
+    }
+  }, [projectName]);
+
   return (
-    <form onSubmit={handleSubmit} aria-label="project-form">
-      <div>
-        <label htmlFor="projectName">Project Name</label>
+    <form
+      onSubmit={handleSubmit}
+      aria-label="project-form"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: "10px",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "10px",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
+        <label htmlFor="projectName" style={{ textAlign: "center" }}>
+          Input your project name in kebab-case:
+        </label>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          gap: "10px",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
         <input
           id="projectName"
           type="text"
@@ -49,8 +87,8 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ onSubmit }) => {
           onChange={(e) => setProjectName(e.target.value)}
           placeholder="e.g., my-new-project"
         />
+        <button type="submit">Initiate Project</button>
       </div>
-      <button type="submit">Initiate Project</button>
       {/* Conditionally render the error message */}
       {error && <p style={{ color: "red" }}>{error}</p>}
     </form>

@@ -28,3 +28,21 @@ button {
   color: #282c34;
   cursor: pointer;
 }
+
+/* ... (keep your existing styles) ... */
+
+.response-area {
+  margin-top: 30px;
+  text-align: left;
+  background-color: #20232a;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+}
+
+.response-area pre {
+  white-space: pre-wrap; /* Helps with long lines */
+  word-wrap: break-word; /* Breaks long words */
+  color: #61dafb;
+}
