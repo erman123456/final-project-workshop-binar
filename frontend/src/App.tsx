@@ -1,23 +1,20 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import "./App.css";
+// ... other imports
+import { ProjectForm } from "./ProjectForm";
 
 function App() {
+  const handleProjectSubmit = (projectName: string) => {
+    console.log("Submitting project:", projectName);
+    // Here you would call your API endpoint
+    // await fetch('YOUR_API_ENDPOINT', { ... });
+  };
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <h1>Project Initiator</h1>
+        <ProjectForm onSubmit={handleProjectSubmit} />
       </header>
     </div>
   );
