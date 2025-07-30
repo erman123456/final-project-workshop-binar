@@ -1,6 +1,29 @@
-# Getting Started with Create React App
+# Project Initiator Frontend
+
+A React TypeScript application that allows users to create new projects by submitting project names and receiving generated project structures from a backend API.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Features
+
+- 📝 Project name input with kebab-case validation
+- 🔄 Real-time API communication with backend
+- ✅ Input validation and error handling
+- 📊 Project structure visualization
+- ⚡ Loading states and user feedback
+
+## Tech Stack
+
+- **React 19.1.1** with TypeScript
+- **React Scripts 5.0.1** for build tooling
+- **Testing Library** for component testing
+- **CSS3** for styling
+
+## Prerequisites
+
+- Node.js (v16 or higher)
+- npm or yarn package manager
+- Backend API running on `http://localhost:8000`
 
 ## Available Scripts
 
@@ -27,17 +50,78 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
 ### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Usage
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+1. Start the backend API server (should be running on `http://localhost:8000`)
+2. Start the frontend development server:
+   ```bash
+   npm start
+   ```
+3. Open [http://localhost:3000](http://localhost:3000) in your browser
+4. Enter a project name in kebab-case format (e.g., `my-awesome-project`)
+5. Click "Initiate Project" to submit the request
+6. View the generated project structure in the response area
+
+## API Integration
+
+The application communicates with a backend API endpoint:
+
+- **Endpoint**: `POST http://localhost:8000/api/initiate-project`
+- **Request Body**: `{ "projectName": "your-project-name" }`
+- **Response**: Project structure and metadata
+
+## Project Structure
+
+```
+src/
+├── App.tsx              # Main application component
+├── App.css              # Application styles
+├── ProjectForm.tsx      # Form component with validation
+├── index.tsx           # React app entry point
+├── index.css           # Global styles
+└── __tests__/          # Test files
+    ├── App.test.tsx
+    └── ProjectForm.test.tsx
+```
+
+## Input Validation
+
+The application enforces kebab-case naming convention:
+
+- ✅ Valid: `my-project`, `awesome-app`, `web-service`
+- ❌ Invalid: `MyProject`, `awesome_app`, `web service`
+
+## Error Handling
+
+The application handles various error scenarios:
+
+- Network connectivity issues
+- Backend API errors
+- Invalid input validation
+- Loading states with user feedback
+
+## Development
+
+To contribute to this project:
+
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Start the development server: `npm start`
+4. Make your changes
+5. Run tests: `npm test`
+6. Build for production: `npm run build`
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
 
 ## Learn More
 
