@@ -41,7 +41,7 @@ function runShellCommand(command, args = [], options = {}) {
 }
 
 // --- Main function to set up the NestJS project ---
-export async function setupNestJSProject(projectName) {
+ async function setupNestJSProject(projectName) {
     // Construct the full path to the new project directory
     const projectPath = path.join(process.cwd(), projectName);
 

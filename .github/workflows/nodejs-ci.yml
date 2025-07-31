@@ -12,7 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
+<<<<<<< Updated upstream
         working-directory: ./backend # Set working directory untuk job ini
+=======
+        working-directory: ./backend # Ini akan membuat semua langkah di job ini berjalan di folder 'backend'
+>>>>>>> Stashed changes
 
     steps:
     - uses: actions/checkout@v4
@@ -21,6 +25,7 @@ jobs:
       with:
         node-version: 20
         cache: 'npm'
+<<<<<<< Updated upstream
         # ✅ PERBAIKAN DI SINI:
         # Karena working-directory sudah diatur ke './backend',
         # package-lock.json sekarang berada di root dari working directory tersebut.
@@ -38,6 +43,22 @@ jobs:
       run:
         working-directory: ./frontend # Set working directory untuk job ini
 
+=======
+        cache-dependency-path: backend/package-lock.json # Pastikan cache path sesuai
+    - name: Install Backend Dependencies
+      run: npm ci
+    - name: Run Backend Tests
+      run: npm test
+    # Tambahkan langkah lain yang spesifik untuk backend di sini (e.g., build, lint, deploy)
+
+  # Job untuk Frontend
+  frontend-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend # Ini akan membuat semua langkah di job ini berjalan di folder 'frontend'
+
+>>>>>>> Stashed changes
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js 20
@@ -45,14 +66,22 @@ jobs:
       with:
         node-version: 20
         cache: 'npm'
+<<<<<<< Updated upstream
         # ✅ PERBAIKAN DI SINI:
         # Karena working-directory sudah diatur ke './frontend',
         # package-lock.json sekarang berada di root dari working directory tersebut.
         cache-dependency-path: package-lock.json
 
+=======
+        cache-dependency-path: frontend/package-lock.json # Pastikan cache path sesuai
+>>>>>>> Stashed changes
     - name: Install Frontend Dependencies
       run: npm ci
     - name: Run Frontend Tests
       run: npm test
     - name: Build Frontend
       run: npm run build
+<<<<<<< Updated upstream
+=======
+    # Tambahkan langkah lain yang spesifik untuk frontend di sini (e.g., lint, deploy)
+>>>>>>> Stashed changes
