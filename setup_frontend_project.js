@@ -1,52 +1,51 @@
-// Mengimpor modul-modul bawaan Node.js yang diperlukan
-import fs from "fs";
-import path from "path";
-import { execSync } from "child_process";
+const fs = require("fs");
+const path = require("path");
+const { exec } = require("child_process");
 
-// 1. MENGAMBIL NAMA PROYEK DARI ARGUMEN TERMINAL
-// process.argv[2] adalah argumen ketiga yang kita berikan saat menjalankan skrip
-// Contoh: node create-fe-project.js nama-proyek-saya
+// Define a port that is not 3000 or 3001
+const PORT = 8080;
+
+// 1. Get the project name from the command-line argument
 const projectName = process.argv[2];
 
-if (!projectName) {
-  console.error("❌ Error: Mohon berikan nama untuk proyek Anda.");
-  console.log("Contoh: node create-fe-project.js proyek-fe-baru");
-  process.exit(1); // Keluar dari skrip jika tidak ada nama proyek
+// 2. Validate the input
+if (!projectName || projectName.trim() === "") {
+  console.error("Error: Please provide a project name.");
+  console.log("Usage: node setup_frontend_projects.js <project-name>");
+  process.exit(1); // Exit with an error code
 }
 
-// 2. MENDEFINISIKAN PATH (LOKASI) PROYEK
-// path.join memastikan path kompatibel di berbagai sistem operasi (Windows, MacOS, Linux)
+console.log(`Creating project: ${projectName}...`);
+
 const projectPath = path.join(process.cwd(), projectName);
-const srcPath = path.join(projectPath, "src");
 
-console.log(`🚀 Memulai pembuatan proyek '${projectName}'...`);
+// Prevent overwriting an existing directory
+if (fs.existsSync(projectPath)) {
+  console.error(`Error: Directory '${projectName}' already exists.`);
+  process.exit(1);
+}
 
-try {
-  // 3. MEMBUAT STRUKTUR FOLDER
-  // { recursive: true } memastikan folder induk dibuat jika belum ada
-  fs.mkdirSync(srcPath, { recursive: true });
-  console.log("✅ Folder `src` berhasil dibuat.");
+// 3. Create the project directory
+fs.mkdirSync(projectPath);
 
-  // 4. MEMBUAT FILE-FILE DASAR
-  // Konten untuk file index.html
-  const htmlContent = `<!DOCTYPE html>
+// 4. Define content for the project files
+const htmlContent = `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${projectName}</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${projectName}</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Selamat Datang di Proyek ${projectName}!</h1>
-  <p>Anda bisa mulai mengedit file di dalam folder 'src'.</p>
-  
-  <script src="script.js" defer></script>
+    <h1>Welcome to ${projectName}!</h1>
+    <p>Your development server is running on port ${PORT}.</p>
+    <p>You can start editing the files in the '${projectName}' directory.</p>
+    <script src="app.js"></script>
 </body>
 </html>`;
 
-  // Konten untuk file style.css
-  const cssContent = `body {
+const cssContent = `body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   display: flex;
   flex-direction: column;
@@ -54,63 +53,119 @@ try {
   align-items: center;
   height: 100vh;
   margin: 0;
-  background-color: #f0f2f5;
-  color: #333;
+  background-color: #282c34;
+  color: white;
+  text-align: center;
 }
 
 h1 {
-  color: #1a73e8;
+  color: #61dafb;
+  font-size: 2.5rem;
 }`;
 
-  // Konten untuk file script.js
-  const jsContent = `console.log('✨ Proyek "${projectName}" berhasil dimuat!');
+const jsContent = `console.log('Hello from ${projectName}! The app is running.');`;
 
-// Contoh interaksi DOM sederhana
-document.querySelector('h1').addEventListener('click', () => {
-  alert('File JavaScript terhubung dengan baik!');
-});`;
+const serverContent = `const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const open = require('open');
 
-  // Menulis konten ke dalam file
-  fs.writeFileSync(path.join(srcPath, "index.html"), htmlContent);
-  fs.writeFileSync(path.join(srcPath, "style.css"), cssContent);
-  fs.writeFileSync(path.join(srcPath, "script.js"), jsContent);
-  console.log("✅ File HTML, CSS, dan JS dasar berhasil dibuat.");
+const PORT = ${PORT};
 
-  // 5. INISIASI NPM DAN INSTALASI DEPENDENSI
-  console.log("⚙️  Menginisiasi npm dan membuat package.json...");
-  // Menjalankan 'npm init -y' di dalam folder proyek yang baru dibuat
-  execSync("npm init -y", { cwd: projectPath, stdio: "pipe" });
+const server = http.createServer((req, res) => {
+    let filePath = path.join(__dirname, req.url === '/' ? 'index.html' : req.url);
+    const extname = path.extname(filePath);
+    let contentType = 'text/html';
 
-  console.log("📦 Menginstall live-server sebagai dev dependency...");
-  // Menginstall live-server untuk development server
-  execSync("npm install live-server --save-dev", {
-    cwd: projectPath,
-    stdio: "pipe",
-  });
+    switch (extname) {
+        case '.js':
+            contentType = 'text/javascript';
+            break;
+        case '.css':
+            contentType = 'text/css';
+            break;
+    }
 
-  // 6. MENAMBAHKAN SCRIPT "START" KE PACKAGE.JSON
-  const packageJsonPath = path.join(projectPath, "package.json");
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+    fs.readFile(filePath, (err, content) => {
+        if (err) {
+            if (err.code == 'ENOENT') {
+                res.writeHead(404, { 'Content-Type': 'text/html' });
+                res.end('<h1>404 Not Found</h1>', 'utf-8');
+            } else {
+                res.writeHead(500);
+                res.end('Server Error: ' + err.code);
+            }
+        } else {
+            res.writeHead(200, { 'Content-Type': contentType });
+            res.end(content, 'utf-8');
+        }
+    });
+});
 
-  // Menambahkan script 'start'
-  packageJson.scripts = packageJson.scripts || {};
-  packageJson.scripts.start = "live-server src";
+server.listen(PORT, () => {
+    const url = \`http://localhost:\${PORT}\`;
+    console.log(\`✅ Server is running successfully at \${url}\`);
+    open(url); // Automatically open the browser
+});
+`;
 
-  // Menulis kembali file package.json yang sudah dimodifikasi
-  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
-  console.log('✅ Script "start" berhasil ditambahkan ke package.json.');
+const packageJsonContent = {
+  name: projectName.toLowerCase().replace(/\s+/g, "-"),
+  version: "1.0.0",
+  description: `A base frontend project named ${projectName}`,
+  main: "server.js",
+  scripts: {
+    start: "node server.js",
+  },
+  author: "",
+  license: "ISC",
+  dependencies: {
+    open: "^8.4.0",
+  },
+};
 
-  // 7. PESAN SUKSES DAN INSTRUKSI LANJUTAN
-  console.log(`\n🎉 Proyek '${projectName}' berhasil dibuat!`);
-  console.log("Untuk memulai, jalankan perintah berikut:");
-  console.log(`\n  cd ${projectName}`);
-  console.log("  npm start\n");
+// 5. Write files to the new directory
+try {
+  fs.writeFileSync(path.join(projectPath, "index.html"), htmlContent);
+  fs.writeFileSync(path.join(projectPath, "styles.css"), cssContent);
+  fs.writeFileSync(path.join(projectPath, "app.js"), jsContent);
+  fs.writeFileSync(path.join(projectPath, "server.js"), serverContent);
+  fs.writeFileSync(
+    path.join(projectPath, "package.json"),
+    JSON.stringify(packageJsonContent, null, 2)
+  );
+  console.log("✅ Project files generated successfully!");
 } catch (error) {
-  console.error(`❌ Terjadi kesalahan: ${error.message}`);
-  // Jika terjadi error, hapus folder yang mungkin sudah dibuat
-  if (fs.existsSync(projectPath)) {
-    fs.rmSync(projectPath, { recursive: true, force: true });
-    console.log(`🧹 Membersihkan folder '${projectName}' yang gagal dibuat.`);
-  }
+  console.error("Error writing project files:", error);
   process.exit(1);
 }
+
+// 6. Install dependencies and run the project
+console.log("📦 Installing dependencies... This may take a moment.");
+
+// Use 'npm install' which is cross-platform
+exec(`cd "${projectPath}" && npm install`, (error, stdout, stderr) => {
+  if (error) {
+    console.error(`Error during dependency installation: ${error.message}`);
+    return;
+  }
+  if (stderr) {
+    // npm warnings are often sent to stderr, so we don't always treat it as a fatal error
+    console.log(`npm install details: ${stderr}`);
+  }
+  console.log("✅ Dependencies installed.");
+  console.log("🚀 Starting the development server...");
+
+  // Run the start script defined in package.json
+  // We use `spawn` here to get live output from the server
+  const { spawn } = require("child_process");
+  const serverProcess = spawn("npm", ["start"], {
+    cwd: projectPath, // Set the working directory
+    shell: true, // Important for running npm on Windows
+    stdio: "inherit", // Pipe the child process's stdio to the parent
+  });
+
+  serverProcess.on("error", (err) => {
+    console.error("Failed to start server process.", err);
+  });
+});
