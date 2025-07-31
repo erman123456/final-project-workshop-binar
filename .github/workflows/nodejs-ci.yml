@@ -1,0 +1,52 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # Job untuk Backend
+  backend-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend # Ini akan membuat semua langkah di job ini berjalan di folder 'backend'
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json # Pastikan cache path sesuai
+    - name: Install Backend Dependencies
+      run: npm ci
+    - name: Run Backend Tests
+      run: npm test
+    # Tambahkan langkah lain yang spesifik untuk backend di sini (e.g., build, lint, deploy)
+
+  # Job untuk Frontend
+  frontend-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend # Ini akan membuat semua langkah di job ini berjalan di folder 'frontend'
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json # Pastikan cache path sesuai
+    - name: Install Frontend Dependencies
+      run: npm ci
+    - name: Run Frontend Tests
+      run: npm test
+    - name: Build Frontend
+      run: npm run build
+    # Tambahkan langkah lain yang spesifik untuk frontend di sini (e.g., lint, deploy)
