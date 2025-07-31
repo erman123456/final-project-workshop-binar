@@ -6,7 +6,7 @@ import "./App.css";
 // This is a guess; you should adjust it to match your actual API response
 interface ProjectStructure {
   projectName: string;
-  structure: object;
+  output_dir: object; // Optional, in case your API returns this
 }
 
 function App() {
@@ -23,16 +23,14 @@ function App() {
 
     try {
       // NOTE: Replace this with your friend's actual backend API endpoint
-      const response = await fetch(
-        "http://localhost:8000/api/initiate-project",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ projectName }),
-        }
-      );
+      const response = await fetch("http://localhost:3002/prompt", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: projectName }),
+      });
+      console.log("cek response", response);
 
       // Handle bad responses from the server (e.g., 400 or 500 errors)
       if (!response.ok) {
@@ -44,6 +42,13 @@ function App() {
       }
 
       const data: ProjectStructure = await response.json();
+      console.log("cek data", data);
+      // Adapt the API response to match the expected ProjectStructure interface
+      const adaptedData: ProjectStructure = {
+        projectName: projectName,
+        output_dir: data.output_dir,
+      };
+      setProjectData(adaptedData);
       setProjectData(data); // 2. On success, set the project data
     } catch (err: any) {
       // Handle network errors or errors thrown from the block above
@@ -70,7 +75,7 @@ function App() {
           <h2>Project '{projectData.projectName}' Initiated!</h2>
           <h3>Generated Project Structure:</h3>
           {/* The <pre> tag is great for displaying formatted JSON */}
-          <pre>{JSON.stringify(projectData.structure, null, 2)}</pre>
+          <pre>{JSON.stringify(projectData.output_dir, null, 2)}</pre>
         </div>
       );
     }

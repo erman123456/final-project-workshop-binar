@@ -5,4 +5,5 @@ export declare class GenerateNewProjectBackendService {
         stdio?: 'inherit' | 'pipe' | 'ignore';
     }): Promise<void>;
     setupNestJSProject(projectName: string): Promise<boolean>;
+    private updateMainTsFile;
 }

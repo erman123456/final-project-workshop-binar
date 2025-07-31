@@ -12,10 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppService = void 0;
 const common_1 = require("@nestjs/common");
 const generate_new_project_backend_service_1 = require("./services/generate_new_project_backend_service");
+const generate_new_project_frontend_service_1 = require("./services/generate_new_project_frontend_service");
 let AppService = class AppService {
     generateNewProjectBackend;
-    constructor(generateNewProjectBackend) {
+    generateNewProjectFrontend;
+    constructor(generateNewProjectBackend, generateNewProjectFrontend) {
         this.generateNewProjectBackend = generateNewProjectBackend;
+        this.generateNewProjectFrontend = generateNewProjectFrontend;
     }
     getHello() {
         return 'Hello World!';
@@ -24,18 +27,30 @@ let AppService = class AppService {
         try {
             const projectNameBackend = `${content}_backend`;
             const projectNameFrontend = `${content}_frontend`;
+            console.log(`Starting project creation for: ${content}`);
+            console.log(`Backend project: ${projectNameBackend}`);
+            console.log(`Frontend project: ${projectNameFrontend}`);
+            console.log('Creating backend project...');
             const generateNewProjectBackend = await this.generateNewProjectBackend.setupNestJSProject(projectNameBackend);
-            if (generateNewProjectBackend) {
+            console.log(`Backend project created: ${generateNewProjectBackend}`);
+            console.log('Creating frontend project...');
+            const generateNewProjectFrontend = await this.generateNewProjectFrontend.setupVanillaProject(projectNameFrontend);
+            console.log(`Frontend project created: ${generateNewProjectFrontend}`);
+            if (generateNewProjectBackend && generateNewProjectFrontend) {
                 return {
-                    message: "Success",
+                    message: 'Success',
                     output_dir: {
-                        backend: `backend/${projectNameBackend}`,
-                        frontend: `backend/${projectNameFrontend}`
-                    }
+                        backend: `output/${projectNameBackend}`,
+                        frontend: `output/${projectNameFrontend}`,
+                    },
                 };
+            }
+            else {
+                throw new Error('One or both projects failed to create');
             }
         }
         catch (error) {
+            console.error('Error in setPrompt:', error);
             if (error instanceof Error) {
                 throw new common_1.HttpException(error.message, common_1.HttpStatus.BAD_REQUEST);
             }
@@ -46,6 +61,7 @@ let AppService = class AppService {
 exports.AppService = AppService;
 exports.AppService = AppService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [generate_new_project_backend_service_1.GenerateNewProjectBackendService])
+    __metadata("design:paramtypes", [generate_new_project_backend_service_1.GenerateNewProjectBackendService,
+        generate_new_project_frontend_service_1.GenerateNewProjectFrontendService])
 ], AppService);
 //# sourceMappingURL=app.service.js.map

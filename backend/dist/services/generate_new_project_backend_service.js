@@ -39,31 +39,28 @@ let GenerateNewProjectBackendService = class GenerateNewProjectBackendService {
         });
     }
     async setupNestJSProject(projectName) {
-        const projectPath = projectName;
+        const path = require('path');
+        const fs = require('fs').promises;
+        const rootDir = path.resolve(__dirname, '../../../');
+        const outputDir = path.join(rootDir, 'output');
+        const projectPath = path.join(outputDir, projectName);
         try {
             console.log('--- Starting NestJS Project Setup ---', projectName);
+            console.log('\nSTEP 1: Creating output directory...');
+            await fs.mkdir(outputDir, { recursive: true });
+            console.log('Output directory ready.');
             console.log('\nSTEP 2: Installing NestJS CLI globally...');
             await this.runShellCommand('npm', ['install', '-g', '@nestjs/cli']);
             console.log('NestJS CLI installed.');
             console.log(`\nSTEP 3: Creating a new NestJS project named '${projectName}'...`);
             await this.runShellCommand('nest', ['new', projectName, '--package-manager', 'npm'], {
+                cwd: outputDir,
                 stdio: 'inherit',
             });
             console.log(`Project '${projectName}' created at: ${projectPath}`);
-            console.log(`\nSTEP 4: Starting the development server for '${projectName}'...`);
-            console.log(`(This command will run indefinitely. To stop, press Ctrl+C in this terminal.)`);
-            console.log(`Access your app at http://localhost:3000 once it's ready.`);
-            const devServerProcess = (0, child_process_1.spawn)('npm', ['run', 'start:dev'], {
-                cwd: projectPath,
-                stdio: 'inherit',
-            });
-            devServerProcess.on('error', (err) => {
-                console.error(`\nFailed to start the development server: ${err.message}`);
-            });
-            devServerProcess.on('close', (code) => {
-                console.log(`\nDevelopment server process exited with code ${code}.`);
-            });
-            console.log('\n--- NestJS Setup Complete. Development server attempting to start. ---');
+            await this.updateMainTsFile(projectPath);
+            console.log('\n--- NestJS Setup Complete. Project created successfully. ---');
+            console.log(`To start the server, run: cd ${projectPath} && npm run start:dev`);
             return true;
         }
         catch (error) {
@@ -73,6 +70,32 @@ let GenerateNewProjectBackendService = class GenerateNewProjectBackendService {
             }
             throw new common_1.HttpException(error, common_1.HttpStatus.BAD_REQUEST);
         }
+    }
+    async updateMainTsFile(projectPath) {
+        const fs = require('fs').promises;
+        const path = require('path');
+        const mainTsPath = path.join(projectPath, 'src', 'main.ts');
+        const port = Math.floor(Math.random() * 7) + 3004;
+        const newMainTsContent = `import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  // Enable CORS for cross-origin requests
+  app.enableCors({
+    origin: 'http://localhost:3001', // Your React app URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
+  await app.listen(process.env.PORT ?? ${port});
+  console.log(\`Application is running on: http://localhost:${port}\`);
+}
+bootstrap();
+`;
+        await fs.writeFile(mainTsPath, newMainTsContent, 'utf8');
+        console.log(`Updated main.ts with CORS support and port ${port}`);
     }
 };
 exports.GenerateNewProjectBackendService = GenerateNewProjectBackendService;

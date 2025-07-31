@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const generate_new_project_backend_service_1 = require("./services/generate_new_project_backend_service");
+const generate_new_project_frontend_service_1 = require("./services/generate_new_project_frontend_service");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -18,7 +19,11 @@ exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService, generate_new_project_backend_service_1.GenerateNewProjectBackendService],
+        providers: [
+            app_service_1.AppService,
+            generate_new_project_backend_service_1.GenerateNewProjectBackendService,
+            generate_new_project_frontend_service_1.GenerateNewProjectFrontendService,
+        ],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map
