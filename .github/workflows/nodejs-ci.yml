@@ -1,0 +1,58 @@
+# Nama alur kerja ini yang akan muncul di tab 'Actions' di repositori GitHub Anda.
+name: Node.js CI/CD
+
+# Tentukan pemicu untuk alur kerja ini.
+# Alur kerja akan berjalan setiap kali ada 'push' ke branch manapun
+# atau setiap kali ada 'pull_request' yang dibuka atau diperbarui.
+on:
+  push:
+    branches: [ main, master, develop ] # Ganti dengan nama branch utama Anda jika berbeda
+  pull_request:
+    branches: [ main, master, develop ] # Ganti dengan nama branch utama Anda jika berbeda
+
+# Definisikan satu atau lebih 'job' yang akan dijalankan.
+# Di sini kita hanya memiliki satu job bernama 'build-and-test'.
+jobs:
+  build-and-test:
+    # Tentukan lingkungan di mana job ini akan berjalan.
+    # 'ubuntu-latest' adalah sistem operasi Linux versi terbaru.
+    runs-on: ubuntu-latest
+
+    # Langkah-langkah yang akan dijalankan dalam job ini.
+    steps:
+      # Langkah pertama adalah 'checkout' kode dari repositori.
+      # Ini penting agar runner GitHub Actions memiliki akses ke file proyek Anda.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Langkah kedua adalah menyiapkan lingkungan Node.js.
+      # Kita akan menggunakan Node.js versi 20.x.
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x' # Anda bisa mengganti versi Node.js sesuai kebutuhan proyek Anda
+          cache: 'npm' # Mengaktifkan caching untuk dependensi npm untuk mempercepat build
+
+      # Langkah ketiga adalah menginstal dependensi proyek.
+      # 'npm ci' (clean install) direkomendasikan untuk lingkungan CI/CD
+      # karena memastikan instalasi yang bersih berdasarkan package-lock.json.
+      # Jika Anda tidak memiliki package-lock.json atau ingin perilaku yang lebih fleksibel,
+      # Anda bisa menggantinya dengan 'npm install'.
+      - name: Install dependencies
+        run: npm ci
+
+      # Langkah keempat adalah menjalankan pengujian proyek.
+      # Pastikan Anda memiliki script 'test' yang didefinisikan di package.json Anda.
+      - name: Run tests
+        run: npm run test
+
+      # Langkah kelima adalah membangun proyek.
+      # 'npm run build' akan membuat versi produksi dari aplikasi Anda.
+      # Pastikan Anda memiliki script 'build' yang didefinisikan di package.json Anda.
+      # Jika proyek Anda menggunakan perintah lain untuk membangun (misalnya 'npm run start'
+      # yang sebenarnya melakukan build), sesuaikan perintah ini.
+      - name: Build project
+        run: npm run build
+
+      # Anda bisa menambahkan langkah-langkah lain di sini,
+      # misalnya, untuk deployment, linting, atau publishing.

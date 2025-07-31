@@ -41,7 +41,7 @@ function runShellCommand(command, args = [], options = {}) {
 }
 
 // --- Main function to set up the NestJS project ---
-async function setupNestJSProject(projectName) {
+export async function setupNestJSProject(projectName) {
     // Construct the full path to the new project directory
     const projectPath = path.join(process.cwd(), projectName);
 
@@ -93,16 +93,16 @@ async function setupNestJSProject(projectName) {
     }
 }
 
-// Get projectName from command line arguments
-const projectName = process.argv[2];
+// // Get projectName from command line arguments
+// const projectName = process.argv[2];
 
-if (!projectName) {
-    console.error('Please provide a project name as an argument: node setup_new_project.js <project-name>');
-    process.exit(1);
-}
+// if (!projectName) {
+//     console.error('Please provide a project name as an argument: node setup_new_project.js <project-name>');
+//     process.exit(1);
+// }
 
 // Execute the main setup function
-setupNestJSProject(projectName);
+// setupNestJSProject(projectName);
 
 // how to run this script:
 // node setup_new_project.js name-project
