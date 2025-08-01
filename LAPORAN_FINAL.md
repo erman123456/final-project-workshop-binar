@@ -46,6 +46,12 @@ Proyek ini mengimplementasikan arsitektur **fullstack** dengan komponen berikut:
 
 ### 1.3 Prompt Engineering Strategy
 
+### BACKEND PROMPT
+
+a. create BE generate script : create a script that will generate and initiate a base backend project with project name from user input. after success generate & initiate the BE project, also run the project so the user can start to develop, use the port except 3000 & 3001. create the script in js file. >> then change to ts file
+b. update BE generate script : the project name is from argument terminal. so the trigger will be like this, node setup_backend_projects.js project-name
+c. create API endpoint : create a BE typescript project using NestJS, that have an API endpoint that will receive a project name from user input. when user submit the request, it will generate a new project using AI and return the response. this project will be running on port 3000
+
 ### FRONTEND PROMPT
 
 a. create fe generate script : create a script that will generate and initiate a base frontend project with project name from user input. after success generate & intitate the fe project, also run the project so the user can start to develop, use the port except 3000 & 3001. create the script in js file. >> then change to ts file
@@ -83,6 +89,66 @@ graph TD
     G --> I[Auto Server Start]
     H --> J[Auto Browser Launch]
 ```
+
+### 1.5 Project Focus & Core Functionality
+
+#### **🎯 Project Focus**
+
+Proyek ini berfokus pada **generate & inisialisasi project baru** menggunakan bantuan **prompt AI** yang dimana outputnya akan mengenerate code backend & frontend sesuai dengan project yang dibutuhkan oleh user. Setiap project yang dihasilkan memiliki:
+
+- **Unit Test Coverage**: Masing-masing project dilengkapi dengan unit test yang komprehensif
+- **Auto Running Unit Test**: Sistem otomatis menjalankan unit test setelah project generation
+- **Auto Build Project**: Proses build otomatis untuk memastikan project siap digunakan
+- **Production Ready**: Project yang dihasilkan langsung dapat dijalankan dan dikembangkan
+
+#### **🤖 AI-Powered Generation Process**
+
+```javascript
+// AI Prompt Flow untuk Project Generation
+const aiPromptFlow = {
+  analysis: "Analyze user requirements and generate project structure",
+  backend: "Generate NestJS backend with TypeScript, testing, and CI/CD",
+  frontend: "Generate React frontend with TypeScript, testing, and modern UI",
+  integration: "Setup API integration between frontend and backend",
+  testing: "Generate comprehensive unit tests for all components",
+  automation: "Setup auto-testing and build processes"
+};
+```
+
+#### **📋 Generated Project Features**
+
+**Backend Project (NestJS):**
+- ✅ RESTful API endpoints
+- ✅ TypeScript implementation
+- ✅ Jest unit testing framework
+- ✅ E2E testing setup
+- ✅ CORS configuration
+- ✅ Error handling middleware
+- ✅ Auto-server startup
+- ✅ Hot reload development
+
+**Frontend Project (React):**
+- ✅ Modern React with TypeScript
+- ✅ Component-based architecture
+- ✅ Form validation
+- ✅ API integration
+- ✅ Responsive design
+- ✅ Unit testing dengan React Testing Library
+- ✅ Auto-browser launch
+- ✅ Development server setup
+
+#### **🔄 Automated Workflow**
+
+1. **User Input Processing**: Validasi dan sanitasi input project name
+2. **AI Analysis**: Google GenAI menganalisis requirements
+3. **Code Generation**: Generate backend dan frontend code
+4. **Project Setup**: Inisialisasi project structure
+5. **Dependency Installation**: Auto-install semua dependencies
+6. **Unit Test Generation**: Generate comprehensive test suite
+7. **Auto Testing**: Jalankan semua unit tests
+8. **Build Process**: Build project untuk production readiness
+9. **Auto Launch**: Start development servers
+10. **Success Validation**: Konfirmasi project berhasil dibuat dan running
 
 ---
 
@@ -189,52 +255,120 @@ jest.mock("@google/genai", () => ({
 
 ## 3. ANALISIS PIPELINE CI/CD
 
-### 3.1 GitHub Actions Workflow
+### 3.1 Implementasi CI/CD yang Dibuat
+
+Proyek ini mengimplementasikan **GitHub Actions CI/CD pipeline** yang terintegrasi dengan baik untuk memastikan kualitas code dan otomatisasi proses development. Pipeline ini dirancang untuk mendukung arsitektur fullstack dengan backend NestJS dan frontend React.
+
+#### **📁 Struktur Pipeline**
+
+```
+.github/
+└── workflows/
+    └── nodejs-ci.yml    # Main CI/CD workflow
+```
+
+#### **🔄 Workflow Configuration**
 
 ```yaml
 name: Node.js CI
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
   pull_request:
-    branches: ["main"]
+    branches: [ "main" ]
 
 jobs:
+  # Job untuk Backend
   backend-build:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: ./backend # Set working directory untuk job ini
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js 20
-        uses: actions/setup-node@v4
-      - name: Install Backend Dependencies
-        run: npm ci
-      - name: Run Backend Tests
-        run: npm test
+    - uses: actions/checkout@v4
+    - name: Use Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+        cache-dependency-path: package-lock.json 
 
+    - name: Install Backend Dependencies
+      run: npm ci
+    - name: Run Backend Tests
+      run: npm test
+
+  # Job untuk Frontend
   frontend-build:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./frontend
+        working-directory: ./frontend # Set working directory untuk job ini
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js 20
-        uses: actions/setup-node@v4
-      - name: Install Frontend Dependencies
-        run: npm ci
-      - name: Run Frontend Tests
-        run: npm test
-      - name: Build Frontend
-        run: npm run build
+    - uses: actions/checkout@v4
+    - name: Use Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+        cache-dependency-path: package-lock.json
+
+    - name: Install Frontend Dependencies
+      run: npm ci
+    - name: Run Frontend Tests
+      run: npm test
+    - name: Build Frontend
+      run: npm run build
 ```
 
-### 3.2 Pipeline Analysis
+### 3.2 Analisis Implementasi CI/CD
+
+#### **🎯 Trigger Conditions**
+
+Pipeline ini diaktifkan pada:
+- **Push ke main branch**: Setiap kali ada push ke branch main
+- **Pull Request ke main**: Setiap kali ada PR yang menarget main branch
+
+#### **⚙️ Job Configuration**
+
+**Backend Job (`backend-build`):**
+- **Environment**: Ubuntu latest dengan Node.js 20
+- **Working Directory**: `./backend` untuk isolasi environment
+- **Dependencies**: Menggunakan `npm ci` untuk clean install
+- **Testing**: Menjalankan test suite dengan `npm test`
+- **Caching**: Optimized npm cache untuk performa
+
+**Frontend Job (`frontend-build`):**
+- **Environment**: Ubuntu latest dengan Node.js 20
+- **Working Directory**: `./frontend` untuk isolasi environment
+- **Dependencies**: Menggunakan `npm ci` untuk clean install
+- **Testing**: Menjalankan test suite dengan `npm test`
+- **Build Process**: Production build dengan `npm run build`
+- **Caching**: Optimized npm cache untuk performa
+
+#### **🚀 Pipeline Execution Flow**
+
+```mermaid
+graph TD
+    A[Code Push/PR] --> B[Trigger Workflow]
+    B --> C[Parallel Jobs Start]
+    C --> D[Backend Build]
+    C --> E[Frontend Build]
+    D --> F[Install Dependencies]
+    E --> G[Install Dependencies]
+    F --> H[Run Backend Tests]
+    G --> I[Run Frontend Tests]
+    I --> J[Build Frontend]
+    H --> K[Backend Success]
+    J --> L[Frontend Success]
+    K --> M[Pipeline Success]
+    L --> M
+```
+
+### 3.3 Pipeline Analysis
 
 #### **Strengths**
 
@@ -271,7 +405,7 @@ jobs:
     # Deployment commands
 ```
 
-### 3.3 Performance Metrics
+### 3.4 Performance Metrics
 
 | Metric          | Current  | Target |
 | --------------- | -------- | ------ |
