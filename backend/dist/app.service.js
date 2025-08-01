@@ -31,17 +31,21 @@ let AppService = class AppService {
             console.log(`Backend project: ${projectNameBackend}`);
             console.log(`Frontend project: ${projectNameFrontend}`);
             console.log('Creating backend project...');
-            const generateNewProjectBackend = await this.generateNewProjectBackend.setupNestJSProject(projectNameBackend);
-            console.log(`Backend project created: ${generateNewProjectBackend}`);
+            const backendResult = await this.generateNewProjectBackend.setupNestJSProject(projectNameBackend);
+            console.log(`Backend project created: ${backendResult}`);
             console.log('Creating frontend project...');
-            const generateNewProjectFrontend = await this.generateNewProjectFrontend.setupVanillaProject(projectNameFrontend);
-            console.log(`Frontend project created: ${generateNewProjectFrontend}`);
-            if (generateNewProjectBackend && generateNewProjectFrontend) {
+            const frontendResult = await this.generateNewProjectFrontend.setupVanillaProject(projectNameFrontend);
+            console.log(`Frontend project created: ${frontendResult}`);
+            if (backendResult && frontendResult) {
                 return {
                     message: 'Success',
                     output_dir: {
                         backend: `output/${projectNameBackend}`,
                         frontend: `output/${projectNameFrontend}`,
+                    },
+                    info: {
+                        backend: 'NestJS backend project created successfully',
+                        frontend: `Vanilla frontend project created and server started on http://localhost:8080`,
                     },
                 };
             }

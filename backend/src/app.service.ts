@@ -29,21 +29,21 @@ export class AppService {
 
       // Create backend project first
       console.log('Creating backend project...');
-      const generateNewProjectBackend =
+      const backendResult =
         await this.generateNewProjectBackend.setupNestJSProject(
           projectNameBackend,
         );
-      console.log(`Backend project created: ${generateNewProjectBackend}`);
+      console.log(`Backend project created: ${backendResult}`);
 
       // Create frontend project second
       console.log('Creating frontend project...');
-      const generateNewProjectFrontend =
+      const frontendResult =
         await this.generateNewProjectFrontend.setupVanillaProject(
           projectNameFrontend,
         );
-      console.log(`Frontend project created: ${generateNewProjectFrontend}`);
+      console.log(`Frontend project created: ${frontendResult}`);
 
-      if (generateNewProjectBackend && generateNewProjectFrontend) {
+      if (backendResult && frontendResult) {
         return {
           message: 'Success',
           output_dir: {
